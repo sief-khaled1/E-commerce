@@ -5,32 +5,15 @@ import { Controller, useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import * as z from "zod"
 
-import { signIn } from "next-auth/react"
-
 import { Button } from "@/components/ui/button"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import {
-    Field,
-    FieldDescription,
-    FieldError,
-    FieldGroup,
-    FieldLabel,
-} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { log } from "console"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Loader2 } from "lucide-react"
 import { emailSchema, nameSchema, PasswordSchema, phoneSchema } from "@/helpers/schema"
 import { registerFields } from "@/helpers/RegisterData"
-import { RegisterApi } from "@/app/(routes)/api/Register/route"
+import { Card, CardContent, CardFooter } from "../ui/card"
+import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field"
 
 const formSchema = z.object({
     email: emailSchema.nonempty("email is required"),
@@ -41,15 +24,13 @@ const formSchema = z.object({
 }).refine((data) => data.password === data.rePassword, {
     message: "Passwords are not the same",
     path: ["rePassword"],
-});
-
+})
 
 export type formData = z.infer<typeof formSchema>
 
 export default function RegisterForm() {
-
-    const [isLoading, setIsLoading] = useState(false);
-
+    const [isLoading, setIsLoading] = useState(false)
+    const router = useRouter()
 
     const form = useForm<formData>({
         resolver: zodResolver(formSchema),
@@ -61,20 +42,27 @@ export default function RegisterForm() {
             phone: "",
         },
     })
-    const router = useRouter();
 
     async function onSubmit(data: formData) {
         setIsLoading(true)
 
-        const response = await RegisterApi(data);
-        console.log(response);
-        
+        try {
+            const response = await fetch("/api/Register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            })
 
-        if (response?.ok) {
-            toast.success("success signup");
-            router.push('/login')
-        } else {
-            toast.error("error")
+            const result = await response.json()
+
+            if (response.ok) {
+                toast.success("Signup successful!")
+                router.push("/login")
+            } else {
+                toast.error(result.error || "Signup failed")
+            }
+        } catch (error: any) {
+            toast.error(error.message || "Something went wrong")
         }
 
         setIsLoading(false)
@@ -87,6 +75,7 @@ export default function RegisterForm() {
                     <FieldGroup>
                         {registerFields.map((item) => (
                             <Controller
+                                key={item.name}
                                 name={item.name as keyof formData}
                                 control={form.control}
                                 render={({ field, fieldState }) => (
@@ -97,8 +86,7 @@ export default function RegisterForm() {
                                         <Input
                                             {...field}
                                             type={item.type}
-                                            id="form-rhf-demo-password"
-                                            aria-invalid={fieldState.invalid}
+                                            id={"form-rhf-demo-" + item.name}
                                             placeholder={item.placeholder}
                                         />
                                         {fieldState.invalid && (
