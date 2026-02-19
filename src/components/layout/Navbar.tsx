@@ -76,9 +76,18 @@ export default async function Navbar() {
 
         </div>
 
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center gap-3">
+
+          {session && data && (
+            <CartIcon
+              serverCartNum={data?.numOfCartItems}
+              cartId={data?.data?.cartOwner}
+            />
+          )}
           <SidebarTrigger />
+
         </div>
+
       </div>
     </nav>
   );

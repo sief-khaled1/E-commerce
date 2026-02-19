@@ -1,9 +1,9 @@
 import Navbar from "@/components/layout/Navbar";
 import "../app/globals.css"
-import { MobileSidebar } from "@/components/layout/MobileSidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import Footer from "@/components/layout/Footer";
 import { Toaster } from "react-hot-toast";
+import MobileSidebar from "@/components/layout/MobileSidebar";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -3,6 +3,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
+
 import {
   Sidebar,
   SidebarContent,
@@ -16,121 +17,130 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar'
-import { HomeIcon, ShoppingBagIcon, ShoppingCartIcon, UserIcon, Settings2Icon, ChevronRightIcon } from "lucide-react"
+
+import {
+  HomeIcon,
+  ShoppingCartIcon,
+  UserIcon,
+  ChevronRightIcon,
+  StoreIcon,
+  TagIcon,
+} from "lucide-react"
+
 import Link from 'next/link'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/auth'
+import SidebarLogout from './SidebarLogout'
 
-export function MobileSidebar() {
-  const data = {
-    navMain: [
-      {
-        title: "HOME",
-        Link:"/",
-        icon: (
-          <HomeIcon
-          />
-        ),
-        isActive: true,
-      },
-      {
-        title: "Products",
-        Link:"/products",
-        icon: (
-          <ShoppingCartIcon
-          />
-        ),
-      },
-      {
-        title: "Cart",
-        url: "#",
-        icon: (
-          <ShoppingBagIcon
-          />
-        ),
-        items: [
-          {
-            title: "All Products",
-            url: "#",
-          }
-        ],
-      },
-      {
-        title: "Analytics",
-        url: "#",
-        icon: (
-          <UserIcon
-          />
-        ),
-        items: [
-          {
-            title: "PROFILE",
-            url: "#",
-          },
-          {
-            title: "Metrics",
-            url: "#",
-          },
-        ],
-      },
-    ],
+export default async function MobileSidebar() {
 
-  }
+  const session = await getServerSession(authOptions)
+
+
+
+  const navMain = [
+    {
+      title: "HOME",
+      link: "/",
+      icon: <HomeIcon />,
+    },
+    {
+      title: "Products",
+      link: "/products",
+      icon: <ShoppingCartIcon />,
+    },
+    {
+      title: "Brands",
+      link: "/brands",
+      icon: <StoreIcon />,
+    },
+    {
+      title: "Categories",
+      link: "/categories",
+      icon: <TagIcon />,
+    },
+    {
+      title: "Account",
+      icon: <UserIcon />,
+      items: session
+        ? [
+          { title: "My Orders", url: "/allorders" },
+          { title: "Wish list", url: "/wishList" },
+        ]
+        : [
+          { title: "Register", url: "/register" },
+          { title: "Login", url: "/login" },
+        ],
+    },
+  ]
 
   return (
-    <>
-      <Sidebar collapsible="offcanvas">
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
-            <SidebarMenu>
-              {data.navMain.map((item) => (
-                <Collapsible
-                  key={item.title}
-                  asChild
-                  defaultOpen={item.isActive}
-                >
-                  <SidebarMenuItem>
-                    <SidebarMenuButton
-                      asChild
-                      tooltip={item.title}
-                      isActive={item.isActive}
-                    >
-                      <a href={item.url}>
+    <Sidebar collapsible="offcanvas">
+      <SidebarContent>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Menu</SidebarGroupLabel>
+
+          <SidebarMenu>
+            {navMain.map((item) => (
+              <Collapsible key={item.title} asChild>
+                <SidebarMenuItem>
+
+
+                  {item.link && (
+                    <SidebarMenuButton asChild>
+                      <Link href={item.link}>
                         {item.icon}
                         <span>{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
-                    {item.items?.length ? (
-                      <>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuAction className="data-[state=open]:rotate-90">
-                            <ChevronRightIcon
-                            />
-                            <span className="sr-only">Toggle</span>
-                          </SidebarMenuAction>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {item.items.map((subItem) => (
-                              <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton asChild>
-                                  <a href={subItem.url}>
-                                    <span>{subItem.title}</span>
-                                  </a>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
-                      </>
-                    ) : null}
-                  </SidebarMenuItem>
-                </Collapsible>
-              ))}
-            </SidebarMenu>
-          </SidebarGroup>
-        </SidebarContent>
-      </Sidebar>
+                  )}
 
-    </>
+
+                  {item.items && (
+                    <>
+                      <SidebarMenuButton>
+                        {item.icon}
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuAction>
+                          <ChevronRightIcon />
+                        </SidebarMenuAction>
+                      </CollapsibleTrigger>
+
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+
+                          {item.items.map((subItem) => (
+                            <SidebarMenuSubItem key={subItem.title}>
+                              <SidebarMenuSubButton asChild>
+                                <Link href={subItem.url}>
+                                  {subItem.title}
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ))}
+
+                          {session && (
+                            <SidebarMenuSubItem>
+                              <SidebarLogout />
+                            </SidebarMenuSubItem>
+                          )}
+
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </>
+                  )}
+
+                </SidebarMenuItem>
+              </Collapsible>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+
+      </SidebarContent>
+    </Sidebar>
   )
 }

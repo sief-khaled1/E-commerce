@@ -28,6 +28,8 @@ import { log } from "console"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { Loader2 } from "lucide-react"
+import Link from "next/link"
+import { ForgetPassword } from "@/actions/ForgetPassword"
 
 const formSchema = z.object({
     email: z.email('invalid email').nonempty('email is required'),
@@ -35,6 +37,11 @@ const formSchema = z.object({
 })
 
 type formData = z.infer<typeof formSchema>
+
+
+// async function forgetPassword() {
+//     const data=await ForgetPassword()
+// }
 
 export default function LoginForm() {
 
@@ -63,10 +70,10 @@ export default function LoginForm() {
         })
 
         if (response?.ok) {
+            toast.error('invalid credentials')
+        } else {
             toast.success("success login");
             router.push('/products')
-        } else {
-            toast.error(response?.error!)
         }
 
         setIsLoading(false)
@@ -122,17 +129,48 @@ export default function LoginForm() {
                     </FieldGroup>
                 </form>
             </CardContent>
-            <CardFooter>
-                <Field orientation="horizontal">
-                    <Button type="button" variant="outline" onClick={() => form.reset()}>
+            <CardFooter className="flex flex-col gap-4">
+
+                <Field orientation="horizontal" className="w-full">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => form.reset()}
+                    >
                         Reset
                     </Button>
-                    <Button disabled={isLoading} type="submit" form="form-rhf-demo">
-                        {isLoading && <Loader2 className="animate-spin" />}
+
+                    <Button
+                        disabled={isLoading}
+                        type="submit"
+                        form="form-rhf-demo"
+                    >
+                        {isLoading && <Loader2 className="animate-spin mr-2" />}
                         Submit
                     </Button>
                 </Field>
+
+
+                <Link
+                    href="/forgot-password"
+                    className="text-sm text-muted-foreground hover:text-primary"
+                >
+                    Forgot your password?
+                </Link>
+
+
+                <p className="text-sm text-muted-foreground">
+                    Don’t have an account?{" "}
+                    <Link
+                        href="/register"
+                        className="text-primary font-medium hover:underline"
+                    >
+                        Create one
+                    </Link>
+                </p>
+
             </CardFooter>
+
         </Card>
     )
 }

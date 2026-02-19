@@ -15,12 +15,18 @@ export default function CartIcon({ serverCartNum, cartId }: { serverCartNum: num
 
 
     useEffect(() => {
-        function handler(e: CustomEvent) {
-
-            setCartNum(e.detail);
+        function handler(e: Event) {
+            const customEvent = e as CustomEvent<number>
+            setCartNum(customEvent.detail)
         }
-        window.addEventListener('cartUpdate', handler as EventListener)
+
+        window.addEventListener('cartUpdated', handler)
+
+        return () => {
+            window.removeEventListener('cartUpdated', handler)
+        }
     }, [])
+
 
     return <>
         <Link href="/cart" className='relative cursor-pointer'>

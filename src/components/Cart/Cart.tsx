@@ -23,7 +23,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import formatPrice from "@/components/products/cart";
 import { CartRes } from "../interfaces/CartInterfaces";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { deleteAllProducts, deleteProductAction, updateProductAction } from "@/actions/CartActions";
 import toast from "react-hot-toast";
 import Checkout from "../Checkout/Checkout";
@@ -43,9 +43,15 @@ export default function Cart({ cartData }: { cartData: CartRes | null }) {
 
     const [loadingId, setLoadingId] = useState<string | null>(null);
     const [cart, setCart] = useState<CartRes | null>(cartData || null);
-    dispatchEvent(
-        new CustomEvent('cartUpdate', { detail: cartData?.numOfCartItems })
-    )
+    useEffect(() => {
+        if (!cart) return
+
+        window.dispatchEvent(
+            new CustomEvent("cartUpdate", {
+                detail: cart?.numOfCartItems ?? 0,
+            })
+        )
+    }, [cart])
 
     async function deleteProduct(productId: string) {
         setLoadingId(productId)
@@ -53,7 +59,7 @@ export default function Cart({ cartData }: { cartData: CartRes | null }) {
         if (response.status == "success") {
             setCart(response)
             dispatchEvent(
-                new CustomEvent('cartUpdate', { detail: response.numOfCartItems })
+                new CustomEvent('cartUpdated', { detail: response.numOfCartItems })
             )
         }
         setLoadingId(null)
@@ -76,7 +82,7 @@ export default function Cart({ cartData }: { cartData: CartRes | null }) {
         if (response.message == "success") {
             setCart(null);
             dispatchEvent(
-                new CustomEvent('cartUpdate', { detail: 0 })
+                new CustomEvent('cartUpdated', { detail: 0 })
             )
         }
         setLoadingId(null)
