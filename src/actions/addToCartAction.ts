@@ -25,7 +25,7 @@ export async function AddToCartAction(productId: string) {
 export async function CheckoutAction(cartId: string, shippingAddress: ShippingAddress) {
     const session = await getServerSession(authOptions);
     if (session) {
-        const response = await fetch(`https://ecommerce.routemisr.com/api/v1/orders/checkout-session/${cartId}?url=https://e-commerce-aa2r-9lo7tjjw4-siefkhaleds-projects.vercel.app/`, {
+        const response = await fetch(`https://ecommerce.routemisr.com/api/v1/orders/checkout-session/${cartId}?url=https://e-commerce-aa2r.vercel.app/`, {
             method: 'POST',
             body: JSON.stringify({ shippingAddress }),
             headers: {
