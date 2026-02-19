@@ -8,7 +8,7 @@ export default function AllordersData() {
 
     const [orders, setOrders] = useState<Order[]>([])
 
-
+// comment for testing
     async function getOrders() {
         const response = await fetch('https://ecommerce.routemisr.com/api/v1/orders/user/' + localStorage.getItem('cartId'))
         const data = await response.json();
