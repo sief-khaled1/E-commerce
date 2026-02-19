@@ -1,13 +1,15 @@
 "use client"
 import { ShoppingCartIcon } from 'lucide-react'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 
 export default function CartIcon({ serverCartNum, cartId }: { serverCartNum: number, cartId: string }) {
 
-    if (cartId) {
-        localStorage.setItem('cartId', cartId);
-    }
+    useEffect(() => {
+        if (cartId) {
+            localStorage.setItem('cartId', cartId);
+        }
+    }, [cartId])
     const [cartNum, setCartNum] = useState(serverCartNum);
     console.log(cartNum);
 

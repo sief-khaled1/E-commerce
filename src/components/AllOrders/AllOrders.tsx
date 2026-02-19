@@ -8,9 +8,11 @@ export default function AllordersData() {
 
     const [orders, setOrders] = useState<Order[]>([])
 
-// comment for testing
+    // comment for testing
     async function getOrders() {
         const response = await fetch('https://ecommerce.routemisr.com/api/v1/orders/user/' + localStorage.getItem('cartId'))
+        console.log(localStorage.getItem('cartId'));
+
         const data = await response.json();
         setOrders(data)
 
@@ -70,7 +72,7 @@ export default function AllordersData() {
                                 </div>
 
                                 <div className="font-semibold">
-                                    {formatPrice(item.price)} 
+                                    {formatPrice(item.price)}
                                 </div>
                             </div>
                         ))}
