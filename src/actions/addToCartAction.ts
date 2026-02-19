@@ -4,7 +4,7 @@ import { authOptions } from "@/auth";
 import { CartRes, ShippingAddress } from "@/components/interfaces/CartInterfaces";
 import { getServerSession } from "next-auth";
 
-export  async function AddToCartAction(productId: string) {
+export async function AddToCartAction(productId: string) {
     const session = await getServerSession(authOptions);
     if (session) {
         const response = await fetch('https://ecommerce.routemisr.com/api/v1/cart', {
@@ -25,7 +25,7 @@ export  async function AddToCartAction(productId: string) {
 export async function CheckoutAction(cartId: string, shippingAddress: ShippingAddress) {
     const session = await getServerSession(authOptions);
     if (session) {
-        const response = await fetch(`https://ecommerce.routemisr.com/api/v1/orders/checkout-session/${cartId}?url=http://localhost:3000`, {
+        const response = await fetch(`https://ecommerce.routemisr.com/api/v1/orders/checkout-session/${cartId}?url=https://e-commerce-aa2r-9lo7tjjw4-siefkhaleds-projects.vercel.app/`, {
             method: 'POST',
             body: JSON.stringify({ shippingAddress }),
             headers: {
