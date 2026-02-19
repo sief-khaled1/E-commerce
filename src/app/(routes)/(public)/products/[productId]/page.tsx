@@ -14,12 +14,32 @@ import {
 } from "@/components/ui/carousel"
 import formatPrice from '@/components/products/cart';
 import AddButton from '@/components/AddButton/AddButton';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/auth';
 
 export default async function ProductDetails({ params }: { params: Params }) {
     const { productId } = await params;
     const response = await fetch('https://ecommerce.routemisr.com/api/v1/products/' + productId);
     const { data: product }: { data: productsResponse } = await response.json();
-    console.log(product)
+    const session = await getServerSession(authOptions);
+    let wishListIds: string[] = [];
+
+    if (session?.accessToken) {
+        const wishRes = await fetch(
+            "https://ecommerce.routemisr.com/api/v1/wishlist",
+            {
+                headers: {
+                    token: session.accessToken as string,
+                },
+            }
+        );
+
+        const wishData = await wishRes.json();
+
+        if (wishData.status === "success") {
+            wishListIds = wishData.data.map((item: any) => item.id);
+        }
+    }
     return <>
 
         <div key={product._id} className='md:pt-30 pt-10 pb-7'>
@@ -74,7 +94,7 @@ export default async function ProductDetails({ params }: { params: Params }) {
                         <p className='text-[20px] font-bold'>Description</p>
                         <span className='font-semibold text-gray-500'>{product.description}</span>
                     </div>
-                    <AddButton productId={product.id} />
+                    <AddButton productId={product.id} wishListIds={wishListIds} />
                 </div>
 
             </Card>
