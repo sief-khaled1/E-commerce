@@ -30,6 +30,7 @@ import { useState } from "react"
 import { Loader2 } from "lucide-react"
 import Link from "next/link"
 import { ForgetPassword } from "@/actions/ForgetPassword"
+import { ForgetPasswordData } from "../ForgetPassword/ForgetPassword"
 
 const formSchema = z.object({
     email: z.email('invalid email').nonempty('email is required'),
@@ -39,9 +40,6 @@ const formSchema = z.object({
 type formData = z.infer<typeof formSchema>
 
 
-// async function forgetPassword() {
-//     const data=await ForgetPassword()
-// }
 
 export default function LoginForm() {
 
@@ -150,13 +148,7 @@ export default function LoginForm() {
                     </Button>
                 </Field>
 
-
-                <Link
-                    href="/forgot-password"
-                    className="text-sm text-muted-foreground hover:text-primary"
-                >
-                    Forgot your password?
-                </Link>
+                <ForgetPasswordData />
 
 
                 <p className="text-sm text-muted-foreground">
